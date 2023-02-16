@@ -116,8 +116,25 @@ class TestFileStorage(unittest.TestCase):
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get(self):
-        """Test that get retrieves objects stored in file.json"""
+        """Test get method for the db storage"""
+        first_state = list(FileStorage.all(FileStorage, State).values())[0]
+        first_city = list(FileStorage.all(FileStorage, City).values())[0]
+        get_first_state = FileStorage.get(FileStorage, State, first_state.id)
+        get_first_city = FileStorage.get(FileStorage, City, first_city.id)
+        self.assertEqual(first_state.id, get_first_state.id)
+        get_first_City = FileStorage.get(FileStorage, City, first_city.id)
+        self.assertEqual(first_city.id, get_first_city.id)
+        self.assertIs(models.storage.get(State, "3656536536"), None)
+        self.assertIs(models.storage.get(None, first_state.id), None)
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count(self):
-        """Test that count returns the right number of objects in file.json"""
+        """Test count method"""
+        objs = list(models.storage.all().values())
+        noObj = len(objs)
+        self.assertIs(type(models.storage.count()), int)
+        self.assertEqual(models.storage.count(), noObj)
+        noObj = len(list(models.storage.all(City).values()))
+        self.assertEqual(models.storage.count(City), noObj)
+        noObj = len(list(models.storage.all(State).values()))
+        self.assertEqual(models.storage.count(State), noObj)
